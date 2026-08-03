@@ -116,16 +116,26 @@ class DesktopController:
 
 
 def launch_desktop(tray_factory: DesktopTrayFactory) -> None:
-    """Start the singleton desktop host or focus the already running FCC UI."""
+    """Start the singleton desktop host or focus the already running FCC UI.
+    
+    If another instance is already running, opens the admin page directly.
+    If server is already running, opens admin page immediately.
+    Otherwise starts a new server instance.
+    """
 
     settings = load_server_settings()
     instance_lock = InterprocessFileLock(config_dir_path() / "desktop.lock")
     if not instance_lock.acquire():
+        # Another instance is running - just open the admin page
+        print("FCC is already running. Opening admin page...")
         open_admin_when_ready(settings)
         return
 
     try:
-        if preflight_proxy(local_proxy_root_url(settings)) is None:
+        # Check if server is already running (possibly from CLI)
+        error = preflight_proxy(local_proxy_root_url(settings))
+        if error is None:
+            print("FCC server is already running. Opening admin page...")
             open_admin_when_ready(settings)
             return
 

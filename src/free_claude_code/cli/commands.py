@@ -197,15 +197,28 @@ def load_server_settings() -> Settings:
 
 
 def open_admin_when_ready(settings: Settings) -> bool:
-    """Wait briefly for /health, then open the current Admin UI."""
+    """Wait briefly for /health, then open the current Admin UI.
+    
+    Uses exponential backoff retry strategy with extended timeout for better reliability.
+    """
 
     admin_url = local_admin_url(settings)
     proxy_root_url = local_proxy_root_url(settings)
-    deadline = time.monotonic() + 30.0
-    while time.monotonic() < deadline:
-        if preflight_proxy(proxy_root_url) is None:
+    
+    # Extended deadline with exponential backoff retries
+    max_retries = 20
+    base_delay = 0.5
+    
+    for attempt in range(max_retries):
+        error = preflight_proxy(proxy_root_url, retries=1)
+        if error is None:
             return webbrowser.open(admin_url)
-        time.sleep(0.15)
+        
+        # Wait with exponential backoff before next attempt
+        if attempt < max_retries - 1:
+            delay = min(base_delay * (2 ** attempt), 3.0)  # Cap at 3 seconds
+            time.sleep(delay)
+    
     return False
 
 
