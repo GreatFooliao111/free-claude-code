@@ -3,6 +3,7 @@
 import shutil
 import subprocess
 import sys
+import time
 from collections.abc import Mapping
 from urllib.error import HTTPError, URLError
 from urllib.request import Request
@@ -15,29 +16,44 @@ from free_claude_code.cli.process_registry import (
 )
 
 PROXY_PREFLIGHT_PATH = "/health"
-PROXY_PREFLIGHT_TIMEOUT_SECONDS = 1.5
+PROXY_PREFLIGHT_TIMEOUT_SECONDS = 3.0
+PROXY_PREFLIGHT_RETRY_DELAY_BASE = 0.3
+PROXY_PREFLIGHT_MAX_RETRIES = 15
 
 
-def preflight_proxy(proxy_root_url: str) -> str | None:
-    """Return an error message when the local proxy health check is unreachable."""
+def preflight_proxy(proxy_root_url: str, *, retries: int = PROXY_PREFLIGHT_MAX_RETRIES) -> str | None:
+    """Return an error message when the local proxy health check is unreachable.
+    
+    Uses exponential backoff retry strategy to handle startup delays.
+    """
 
     url = f"{proxy_root_url.rstrip('/')}{PROXY_PREFLIGHT_PATH}"
     request = Request(url, method="GET")
-    try:
-        with open_local_request(
-            request, timeout=PROXY_PREFLIGHT_TIMEOUT_SECONDS
-        ) as response:
-            status_code = response.getcode()
-    except HTTPError as exc:
-        return f"returned HTTP {exc.code}"
-    except URLError as exc:
-        return str(exc.reason)
-    except OSError as exc:
-        return str(exc)
-
-    if not 200 <= status_code < 300:
-        return f"returned HTTP {status_code}"
-    return None
+    
+    last_error: str | None = None
+    for attempt in range(retries):
+        try:
+            with open_local_request(
+                request, timeout=PROXY_PREFLIGHT_TIMEOUT_SECONDS
+            ) as response:
+                status_code = response.getcode()
+        except HTTPError as exc:
+            last_error = f"returned HTTP {exc.code}"
+        except URLError as exc:
+            last_error = str(exc.reason)
+        except OSError as exc:
+            last_error = str(exc)
+        else:
+            if 200 <= status_code < 300:
+                return None
+            last_error = f"returned HTTP {status_code}"
+        
+        # If not the last attempt, wait with exponential backoff before retrying
+        if attempt < retries - 1:
+            delay = PROXY_PREFLIGHT_RETRY_DELAY_BASE * (2 ** attempt)
+            time.sleep(delay)
+    
+    return last_error
 
 
 def resolve_client_binary(
