@@ -1,17 +1,58 @@
-__pycache__
-.claude
-.cursor
-.pytest_cache
-.ruff_cache
-.serena
-.venv
-agent_workspace
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.python-version
+.pytest_cache/
+.mypy_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
 .env
-/logs/
-server.log
-/server.*.log
-debug-*.log
+.env.local
+*.env*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# Coverage
 .coverage
-llama_cache
-.smoke-results
-.vscode
+coverage/
+htmlcov/
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.pytest_cache/
+.hypothesis/
+
+# Local configuration
+.settings/
+nbproject/
+```

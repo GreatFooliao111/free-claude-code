@@ -49,6 +49,7 @@ SAMBANOVA_DEFAULT_BASE = "https://api.sambanova.ai/v1"
 # Kilo.ai gateway OpenAI-compatible Chat Completions API.
 KILO_DEFAULT_BASE = "https://api.kilo.ai/api/gateway"
 OPENAI_CODEX_DEFAULT_BASE = "https://chatgpt.com/backend-api/codex"
+TOKENROUTER_DEFAULT_BASE = "https://api.tokenrouter.com/v1"
 
 
 class ProviderAuthKind(StrEnum):
@@ -371,6 +372,15 @@ PROVIDER_CATALOG: dict[str, ProviderDescriptor] = {
         default_base_url=OLLAMA_DEFAULT_BASE,
         base_url_attr="ollama_base_url",
         local=True,
+    ),
+    "tokenrouter": ProviderDescriptor(
+        provider_id="tokenrouter",
+        display_name="TokenRouter",
+        credential_env="TOKENROUTER_API_KEY",
+        credential_url="https://www.tokenrouter.com/settings/api-keys",
+        credential_attr="tokenrouter_api_key",
+        default_base_url=TOKENROUTER_DEFAULT_BASE,
+        proxy_attr="tokenrouter_proxy",
     ),
 }
 
