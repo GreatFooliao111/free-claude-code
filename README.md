@@ -61,7 +61,9 @@ Run your coding agents with free, paid, or local models. Choose and validate pro
 
 <a id="install"></a>
 
-### 1. Install Or Update
+### 1. Install
+
+**First-time installation:**
 
 macOS/Linux:
 
@@ -75,11 +77,29 @@ Windows PowerShell:
 & ([scriptblock]::Create((irm "https://raw.githubusercontent.com/Alishahryar1/free-claude-code/main/scripts/install.ps1")))
 ```
 
-Re-run the same command whenever you want to update. You can review the installers before running them: [install.sh](scripts/install.sh) and [install.ps1](scripts/install.ps1).
+You can review the installers before running them: [install.sh](scripts/install.sh) and [install.ps1](scripts/install.ps1).
+
+### 2. Update (Existing Installation)
+
+**Quick update to the latest version:**
+
+macOS/Linux:
+
+```bash
+curl -fsSL "https://raw.githubusercontent.com/Alishahryar1/free-claude-code/main/scripts/update.sh" | sh
+```
+
+Windows PowerShell:
+
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/Alishahryar1/free-claude-code/main/scripts/update.ps1")))
+```
+
+The update script is faster than the installer since it skips coding agent verification. You can review the updaters: [update.sh](scripts/update.sh) and [update.ps1](scripts/update.ps1).
 
 The installer asks which coding agents to install or verify. Choose at least one; skipped agents are left unchanged.
 
-### 2. Start FCC
+### 3. Start FCC
 
 #### Windows
 
@@ -116,7 +136,7 @@ Use the port shown in your terminal if it differs from `8082`.
 
 <a id="nvidia-nim-provider"></a>
 
-### 3. Configure NVIDIA NIM
+### 4. Configure NVIDIA NIM
 
 1. Create an API key at [build.nvidia.com/settings/api-keys](https://build.nvidia.com/settings/api-keys).
 2. Open the Admin UI URL from the server log.
@@ -128,7 +148,7 @@ Use the port shown in your terminal if it differs from `8082`.
   <img src="assets/admin-page.png" alt="Local admin UI for proxy settings" width="700">
 </div>
 
-### 4. Run Your Coding Agent
+### 5. Run Your Coding Agent
 
 Claude Code:
 
@@ -499,7 +519,19 @@ Restart `fcc-server`. In **Admin UI → Messaging → Voice**, enable voice note
 
 ### Update
 
-Re-run the matching command from [Install Or Update](#install).
+Re-run the update command from [Install Or Update](#install):
+
+macOS/Linux:
+```bash
+curl -fsSL "https://raw.githubusercontent.com/Alishahryar1/free-claude-code/main/scripts/update.sh" | sh
+```
+
+Windows PowerShell:
+```powershell
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/Alishahryar1/free-claude-code/main/scripts/update.ps1")))
+```
+
+Or re-run the full installer if you need to verify coding agents again.
 
 ### Uninstall
 
